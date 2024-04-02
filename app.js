@@ -4,6 +4,8 @@ import cors from "cors";
 import mongoose from "mongoose";
 import "dotenv/config";
 import contactsRoute from "./route/contactsRoute.js";
+require('dotenv').config();
+
 const app = express();
 const { DBConnect, DBPORT } = process.env;
 mongoose.set("strictQuery", true);
