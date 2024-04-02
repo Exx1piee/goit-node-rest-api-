@@ -1,63 +1,85 @@
-import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
-import * as contactsService from "../services/contactsServices.js";
+// Імпорт функцій
 import HttpError from "../helpers/HttpError.js";
-
-const getAllContacts = async (req, res) => {
-  const result = await contactsService.listContacts();
-
-  res.json(result);
-};
-
-const getOneContact = async (req, res) => {
-  const { id } = req.params;
-  const result = await contactsService.getContactById(id);
-
-  if (!result) {
-    throw HttpError(404);
+import {
+  addContact,
+  getContactById,
+  listContacts,
+  removeContact,
+  updateContactFavoriteStatus,
+  updateById,
+} from "../services/contactsServices.js";
+// Отримання листу усіх контактів
+export const getAllContacts = async (req, res, next) => {
+  try {
+    const result = await listContacts();
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
   }
-
-  res.json(result);
 };
-
-const createContact = async (req, res) => {
-  const result = await contactsService.addContact(req.body);
-
-  res.status(201).json(result);
-};
-
-const updateContact = async (req, res) => {
-  const { id } = req.params;
-
-  if (!Object.keys(req.body).length) {
-    return res
-      .status(400)
-      .json({ message: "Body must have at least one field" });
+// Отримання контакту по ID
+export const getContact = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await getContactById(id);
+    if (!result) {
+      throw HttpError(404);
+    }
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
   }
-
-  const result = await contactsService.updateContact(id, req.body);
-
-  if (!result) {
-    throw HttpError(404);
-  }
-
-  res.json(result);
 };
+// Видалення контакту
+export const deleteContact = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await removeContact(id);
 
-const deleteContact = async (req, res) => {
-  const { id } = req.params;
-  const result = await contactsService.removeContact(id);
-
-  if (!result) {
-    throw HttpError(404);
+    if (!result) {
+      throw HttpError(404);
+    }
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
   }
-
-  res.status(204).json();
 };
+// Створення контакту
+export const createContact = async (req, res, next) => {
+  try {
+    const result = await addContact(req.body);
+    if (!result) {
+      throw HttpError(404);
+    }
+    res.status(201).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+// Оновлення контакту
+export const updateContact = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await updateById(id, req.body);
+    if (!result) {
+      throw HttpError(404);
+    }
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+// Оновлення статусу контакту для додавання до вибраних
+export const updateContactStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await updateContactFavoriteStatus(id, req.body);
 
-export default {
-  getAllContacts: ctrlWrapper(getAllContacts),
-  getOneContact: ctrlWrapper(getOneContact),
-  createContact: ctrlWrapper(createContact),
-  updateContact: ctrlWrapper(updateContact),
-  deleteContact: ctrlWrapper(deleteContact),
+    if (!result) {
+      throw HttpError(404);
+    }
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
 };
