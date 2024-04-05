@@ -52,7 +52,7 @@ export const updateContact = async (contactId, data) => {
     return null;
   }
 
-  contactsList[index] = { ...data, contactId };
+  contactsList[index] = { id: contactId, ...data };
   await updateContacts(contactsList);
   return contactsList[index];
 };

@@ -27,18 +27,14 @@ const createContact = async (req, res) => {
 
 const updateContact = async (req, res) => {
   const { id } = req.params;
+  const contactToUpdate = await contactsService.getContactById(id);
 
-  if (!Object.keys(req.body).length) {
-    return res
-      .status(400)
-      .json({ message: "Body must have at least one field" });
-  }
-
-  const result = await contactsService.updateContact(id, req.body);
-
-  if (!result) {
+  if (!contactToUpdate) {
     throw HttpError(404);
   }
+
+  const updatedFields = { ...contactToUpdate, ...req.body };
+  const result = await contactsService.updateContact(id, updatedFields);
 
   res.json(result);
 };
@@ -51,9 +47,8 @@ const deleteContact = async (req, res) => {
     throw HttpError(404);
   }
 
-  res.status(204).json();
+  res.json(result);
 };
-
 export default {
   getAllContacts: ctrlWrapper(getAllContacts),
   getOneContact: ctrlWrapper(getOneContact),
