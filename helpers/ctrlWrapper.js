@@ -1,15 +1,12 @@
-import HttpError from "./HttpError.js";
-
-const validateBody = (schema) => {
-  const func = (req, _, next) => {
-    const { error } = schema.validate(req.body);
-    if (error) {
-      next(HttpError(400, error.message));
+const ctrlWrapper = ctrl => {
+  const func = async (req, res, next) => {
+    try {
+      await ctrl(req, res, next);
+    } catch (error) {
+      next(error);
     }
-    next();
   };
-
   return func;
 };
 
-export default validateBody;
+export default ctrlWrapper;
