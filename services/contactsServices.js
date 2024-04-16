@@ -1,58 +1,25 @@
-import fs from "fs/promises";
-import path from "path";
-import { nanoid } from "nanoid";
+import Contact from '../models/contact.js';
 
-const contactsPath = path.resolve("db", "contacts.json");
+const listContacts = () => Contact.find({}, '-createdAt -updatedAt');
 
-const updateContacts = async (contacts) =>
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+const addContact = data => Contact.create(data);
 
-export const listContacts = async () => {
-  const contacts = await fs.readFile(contactsPath);
-  return JSON.parse(contacts);
+const getContactById = id => {
+  const data = Contact.findById(id);
+  return data;
 };
 
-export const getContactById = async (contactId) => {
-  const contactsList = await listContacts();
-  const result = contactsList.find((contact) => contact.id === contactId);
-  return result || null;
-};
+const updateContactById = (id, data) => Contact.findByIdAndUpdate(id, data);
 
-export const addContact = async ({ name, email, phone }) => {
-  const contactsList = await listContacts();
-  const newContact = {
-    id: nanoid(),
-    name,
-    email,
-    phone,
-  };
-  contactsList.push(newContact);
-  await updateContacts(contactsList);
-  return newContact;
-};
+const removeContactById = id => Contact.findByIdAndDelete(id);
 
-export const removeContact = async (contactId) => {
-  const contactsList = await listContacts();
-  const index = contactsList.findIndex((contact) => contact.id === contactId);
+const updateContactStatusById = (id, data) => Contact.findByIdAndUpdate(id, data);
 
-  if (index === -1) {
-    return null;
-  }
-
-  const [result] = contactsList.splice(index, 1);
-  await updateContacts(contactsList);
-  return result;
-};
-
-export const updateContact = async (contactId, data) => {
-  const contactsList = await listContacts();
-  const index = contactsList.findIndex((contact) => contact.id === contactId);
-
-  if (index === -1) {
-    return null;
-  }
-
-  contactsList[index] = { ...data, contactId };
-  await updateContacts(contactsList);
-  return contactsList[index];
+export default {
+  listContacts,
+  addContact,
+  getContactById,
+  updateContactById,
+  removeContactById,
+  updateContactStatusById,
 };
