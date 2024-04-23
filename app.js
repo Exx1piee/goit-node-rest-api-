@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import 'dotenv/config';
 
 import contactsRouter from './routes/contactsRouter.js';
+import authRouter from './routes/authRouter.js';
 
 const { DB_HOST, PORT } = process.env;
 
@@ -13,14 +14,8 @@ const app = express();
 app.use(morgan('tiny'));
 app.use(cors());
 app.use(express.json());
-app.use('/api/contacts/:id', (req, res, next) => {
-  const { id } = req.params;
-  if (!Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: 'Invalid ID' });
-  }
-  next();
-});
 
+app.use('/api/users', authRouter);
 app.use('/api/contacts', contactsRouter);
 
 app.use((_, res) => {
