@@ -1,4 +1,4 @@
-import Contact from '../models/Contact.js';
+import Contact from '../models/contact.js';
 
 const listContacts = (filter = {}, setting = {}) =>
   Contact.find(filter, '-createdAt -updatedAt', setting).populate('owner', 'email subscription');
