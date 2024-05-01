@@ -1,4 +1,3 @@
-
 import User from '../models/User.js';
 
 const findUser = filter => User.findOne(filter);
